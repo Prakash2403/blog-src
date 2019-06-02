@@ -1,0 +1,3 @@
+[submodule "themes/hugo-theme-dream"]
+	path = themes/hugo-theme-dream
+	url = https://github.com/Prakash2403/hugo-theme-dream.git
