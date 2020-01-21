@@ -1,7 +1,7 @@
 baseURL = "https://prakash2403.github.io/"
 languageCode = "en-us"
 title = "Prakash Rai"
-theme="m10c"
+theme="hugo-theme-m10c"
 
 [params]
     author= "Prakash"
