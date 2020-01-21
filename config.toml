@@ -1,11 +1,18 @@
 baseURL = "https://prakash2403.github.io/"
 languageCode = "en-us"
-title = "Information Theory | Statistical Mechanics | Machine Learning"
-theme="hugo-theme-dream"
+title = "Prakash Rai"
+theme="m10c"
 
 [params]
     author= "Prakash"
     avatar= "/me/profile.jpg"
-    motto= "Lazy | Math Nerd | Potterhead | Data Scientist"
+    description= "Lazy | Math Nerd | Potterhead | Data Scientist"
     github= "Prakash2403"
+    math= true
 
+	[[params.social]]
+  		name = "github"
+  		url = "https://github.com/Prakash2403"
+	[[params.social]]
+		name = "linkedin"
+		url = "https://www.linkedin.com/in/prakash-rai-2403/"

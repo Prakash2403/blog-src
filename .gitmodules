@@ -1,3 +1,6 @@
 [submodule "themes/hugo-theme-dream"]
 	path = themes/hugo-theme-dream
 	url = https://github.com/Prakash2403/hugo-theme-dream.git
+[submodule "hugo-theme-m10c"]
+	path = themes/hugo-theme-m10c
+	url = https://github.com/vaga/hugo-theme-m10c.git
