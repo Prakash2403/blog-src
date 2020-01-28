@@ -2,29 +2,33 @@
 title: "Learning Partial Differential Equations From Data Using Neural Networks"
 date: 2020-01-21T06:13:50+05:30
 post-style: ""
-tags: ['AI', 'Mathematics', '5-Min-Read']
+tags: ['AI', 'Mathematics', '7-Min-Reads']
 domain: ['AI']
 markup: "mmark"
+draft: False
 summary: "Given a set of dictionary functiWons and noisy data."
 ---
 
-Link to paper: [Learning Partial Differential Equations From Data Using Neural Networks](https://arxiv.org/pdf/1910.10262.pdf)
+**Link to paper:** [Learning Partial Differential Equations From Data Using Neural Networks](https://arxiv.org/pdf/1910.10262.pdf)
 ### Prerequisites
 
-A PDE can be represented as follows:
+A [Partial Differential Equation](https://en.wikipedia.org/wiki/Partial_differential_equation#Introduction) relates a function with its partial derivatives. It can be represented as follows:
 
-  $$F(\textbf{x}, f(\textbf{x}),  \frac{\partial f}{\partial \textbf{x}_1}, \frac{\partial f}{\partial \textbf{x}_2}...\frac{\partial ^t f}{\partial \textbf{x}_n^t}) = 0$$
+  $$F(\textbf{x}, f(\textbf{x}),  \frac{\partial f}{\partial x_1}, \frac{\partial f}{\partial x_2}...\frac{\partial ^t f}{\partial x_n^t}, \frac{\partial ^2 f}{\partial x_1 \partial x_2}, ...) = 0$$
 
-If one restricts F to be linear combination of some pre-specified set of functions, then above equation can be represented as
+where $$\textbf{x} \medspace \epsilon \medspace \R^n, t \medspace \epsilon \medspace \Z$$.
+
+
+If one restricts $$F$$ to be linear, then above equation can be represented as
 
   $$ \textbf{D} \phi = \sum_{i=0}^{k}\phi_iD_i = 0 $$
 
-where D is dictionary of functions and $$\phi$$ is vector containing linear coefficients. It is evident that $$\phi \medspace \epsilon \medspace N(D)$$ where $$N(D)$$ is null space of D.
+where $$\textbf{D}$$ is pre-specified set of functions(aka Dictionary functions) on which you expect the PDE to depend and $$\phi$$ is vector of linear coefficients. It is evident that $$\phi \medspace \epsilon \medspace N(\textbf{D})$$ where $$N(\textbf{D})$$ is [null space](https://math.stackexchange.com/questions/21131/physical-meaning-of-the-null-space-of-a-matrix) of $$\textbf{D}$$.
 
 ##### Key points to note
 
 * Dictionary functions: Set of functions on which you expect your PDE to depend
-* Null space is spanned by right singular vectors whose associated singular value is 0.
+* Null Space of a matrix is spanned by it's [right singular vectors](https://en.wikipedia.org/wiki/Singular_value_decomposition#Singular_values,_singular_vectors,_and_their_relation_to_the_SVD) whose associated [singular value](https://en.wikipedia.org/wiki/Singular_value_decomposition#Singular_values,_singular_vectors,_and_their_relation_to_the_SVD) is $$0$$.
 
 ### Available Data
 
@@ -38,7 +42,7 @@ where,
 
  $$f(\textbf{X})=(f(x_1), f(x_2), f(x_3)......f(x_n))$$ and $$ f(x_i) \medspace \epsilon \medspace \R$$
 
- $$\textbf{D} = (D_1, D_2, D_3.........D_k)$$ ; $$D_i$$ is a dictionary function
+ $$\textbf{D} = (D_1, D_2, D_3.........D_k)$$ ; Dictionary functions; $$D_i$$ is either some function of $$f$$ or relates $$f$$ with its partial derivate(s).
 
 ### Output we want
 
@@ -47,8 +51,8 @@ where,
 
 ### Proposed Architecture
 
-Since, Neural Networks are universal function approximators(under certain assumptions, of course), one can use them to approximate
-$$\textbf{f(x)}$$. Let's call the approximated function $$\bar f$$
+Since, Artificial Neural Networks are [universal function approximators(under certain assumptions, of course)](http://neuralnetworksanddeeplearning.com/chap4.html), one can use them to approximate a given function
+$$f$$. Let's call the approximated function $$\bar f$$
 
 Only issue with this approach is, it overfits if data is noisy. And here is where PDE shines.
 
@@ -62,40 +66,45 @@ But we still haven't figured out how to come up with $$\phi$$. So lets focus on 
 
 The approach is as follows:
 
-1. Sample $$\textbf{k}$$ elements from $$\textbf{x}$$. Call the set of points $$\bar \textbf{x}$$
-2. Evaluate dictionary functions $$D$$ on $$\bar \textbf{x}$$. This operation will be represented as $$D(\bar f, \bar x)$$
+1. Sample $$k$$ elements from $$\textbf{X}$$. Call the set of points $$\bar \textbf{X}$$
+2. Evaluate dictionary functions $$D$$ on $$\bar \textbf{X}$$. This operation will be represented as $$D(\bar f, \bar \textbf{X})$$. Explained more in furthur paragraphs.
 3. If there were $$L$$ dictionary functions, then step (2) will yield a matrix of dimension $$k \times L$$. Let's call the matrix $$\bar K$$
-4. Using _some technique_, find null vectors of $$\bar K$$. Any null vector of $$\bar K$$ is capable of being $$\phi$$. Use some other regularization to choose one.
+4. Using _some technique_, find null vectors of $$\bar K$$. Note that any null vector of $$\bar K$$ is capable of being $$\phi$$.
 
-But there is a small catch here. In step 2, we are evaluating dictionary functions on sampled data points. This has one issue: We don't know exact representation of $$\textbf{f}$$. We are relying on our neural network to give us an approximate representation of $$\textbf{f}$$ and while neural networks are theoretically capable of approximating a function(again, under few assumptions) to arbitrary accuracy, they can't produce the exact representation. So, the matrix $$\bar K$$ has some _implicit_ error which can't be removed. This also means that $$\bar K$$ may be a full-rank matrix(because of independent _implicit_ error). Hence, we may not find any null vector in step (4).
+But there is a small catch here. In step 2, we are evaluating dictionary functions on sampled data points. This has one issue: We don't know exact representation of $$f$$. We are relying on our neural network to give us an approximate representation of $$f$$ and while neural networks are theoretically capable of approximating a function(again, under few assumptions) to arbitrary accuracy, they can't produce the exact representation. So, the matrix $$\bar K$$ has some _implicit_ error which can't be removed. This also means that $$\bar K$$ may be a [full-rank matrix](https://en.wikipedia.org/wiki/Rank_(linear_algebra))(because of independent _implicit_ error). Hence, we may not find any null vector in step (4).
 
-But, if one assumes that every dictionary function is distributive and $$|f-\bar f| < \epsilon$$, where $$\epsilon$$ is an arbitrary positive number, then one can easily prove that $$\bar K$$ will approximate $$D(f, \bar x)$$, where $$D(f, \bar x)$$ denotes dictionary function being evaluated on $$\bar x$$, using the exact representation of $$f$$. Thus, the right singular vector associated with smallest singular of $$\bar K$$ will be an approximation for $$\phi$$ (Remember, SVD always gives non-negative eigenvalues, and null space is spanned by right singular vectors whose associated singular value is 0. So, if $$\bar K$$ is an approximation to $$D(f, \bar x)$$, then right singular vector corresponding to singular value closest to 0(i.e. minimum singular value) will be an approximation to $$\phi$$)
+But, if one assumes that every dictionary function is [distributive](https://en.wikipedia.org/wiki/Distributive_property) and $$|f-\bar f| < \epsilon$$, where $$\epsilon$$ is an arbitrary positive number, then one can easily prove that $$\bar K$$ will approximate $$D(f, \bar \textbf{X})$$, where $$D(f, \bar \textbf{X})$$ denotes dictionary function being evaluated on $$\bar \textbf{X}$$, using the exact representation of $$f$$. Thus, the right singular vector associated with smallest singular of $$\bar K$$ will be an approximation for $$\phi$$ (Remember, singular values are always non-negative, and null space is spanned by right singular vectors whose associated singular value is $$0$$. So, if $$\bar K$$ is an approximation to $$D(f, \bar \textbf{X})$$, then right singular vector corresponding to singular value closest to $$0$$(i.e. minimum singular value) will be an approximation to $$\phi$$)
 
-Finally, we know what to find and why to find it. We just don't know how. There are several methods of finding smallest eigenvalue and corresponding eigenvector for a given matrix. Authors of this paper choose to go with [_Min-Max theorem for Singular values_](https://en.wikipedia.org/wiki/Min-max_theorem#Min-max_principle_for_singular_values). Based on quality and quantity of your data, you may choose to go with some other method.
+Finally, we know what to find and why to find it. We just don't know how. There are several methods of finding smallest singular value and corresponding right singular vector for a given matrix. Authors of this paper choose to go with [_Min-Max theorem for Singular values_](https://en.wikipedia.org/wiki/Min-max_theorem#Min-max_principle_for_singular_values). Based on quality and quantity of your data, you may choose to go with some other method.
 
-### Intuition behind loss function
+### Loss function
+#### Intuition behind loss function
 
-We want our approximated function to fit the data as well as underlying PDEs. And since it's Machine Learning, it won't be complete without _Occam's Razor_ :). Hence, we can say that
+We want our approximated function to fit the data as well as underlying PDEs. And since it's Machine Learning, it won't be complete without [_Occam's Razor_](https://en.wikipedia.org/wiki/Occam%27s_razor) :). Hence, we can say that
 
 $$L_{net} = G(L_{model}, L_{PDE}, L_{complexity})$$
 
-Assuming data points($$\textbf{X}$$) are I.I.D. and coming from a Guassian distribution, $$L_{model}$$ optimal loss function is simply MSE. In most practical cases, people tend to ignore the Gaussian distribution prior assumption(never understood why they do it. Humans are complicated, aren't they?). Assuming $$\textbf{n}$$ data points:
+Assuming data points($$\textbf{X}$$) are I.I.D. and coming from a Guassian distribution, $$L_{model}$$ can simply be MSE. In most practical cases, people tend to ignore the Gaussian distribution prior assumption(never understood why they do it. Humans are complicated, aren't they?). Assuming $$\textbf{n}$$ data points:
 
-$$L_{model} = \sqrt{\dfrac{1}{2n}\sum_{i=0}^n(||\textbf{f}(x_i) - \bar \textbf{f}(x_i)||_{_2}^{^2}})$$
+$$L_{model} = \sqrt{\dfrac{1}{2n}\sum_{i=0}^n(||f(x_i) - \bar f(x_i)||_{_2}^{^2}})$$
 
-$$L_{PDE}$$ is also simple. Assuming you get $$\phi^*$$ as your coefficients for underlying PDE, $$||D(\bar f, \bar x)\cdot\phi^*||_{_2}^{^2}$$  should give $$L_{PDE}$$. Why? Because if $$\bar f$$ approximates $$\bar f$$, then $$D(\bar f, \bar x)\cdot\phi^* $$ should be $$0$$.(Remember, $$\phi$$ lies in null space of $$D$$)
+$$L_{PDE}$$ is also simple. Assuming you get $$\phi^*$$ as your coefficients for underlying PDE, $$||D(\bar f, \bar \textbf{X})\cdot\phi^*||_{_2}^{^2}$$  should give $$L_{PDE}$$. Why? Because if $$\bar f$$ approximates $$f$$, then $$D(\bar f, \bar \textbf{X})\cdot\phi^* $$ should be $$0$$.(Remember, $$\phi$$ lies in null space of $$D$$)
 
-$$L_{PDE} = ||D(\bar f, \bar x)\cdot\phi^*||_{_2}^{^2}$$
+$$L_{PDE} = ||D(\bar f, \bar \textbf{X})\cdot\phi^*||_{_2}^{^2}$$
 
-Coming to $$L_{complexity}$$, I would say it is based on data and induction bias. Here, authors assume that you want your underlying PDE to be sparse i.e. it should be dependent on as few terms as possible. Hence, they applied $$L_1$$ regularization on $$\phi$$. But based on your priors, you can always choose(or invent) a suitable regularizer.
+Coming to $$L_{complexity}$$, I would say it depends on data and [inductive bias](https://en.wikipedia.org/wiki/Inductive_bias). Here, authors assume that you want your underlying PDE to be sparse i.e. it should be dependent on as few dictionary functions as possible. Hence, they applied $$L_1$$ regularization on $$\phi$$.
 
 $$L_{complexity}=||\phi||_{_1}$$
 
+But based on your priors, you can always choose(or invent) a suitable regularizer.
+
 #### Formulating the loss function
 
-Now, let's think of representing loss function in terms of three losses described above. We would want PDE to intervene when model is overfitting. Generally, model overfits when data is noisy i.e. it contains outliers. Outliers cause a spike in loss value, thus increasing the **mean** (remember, $$L_{model}$$ is MSE) and consequently forcing model to _perfectly_ fit the outlier. However, in the process of fitting every outlier, the function which model learns becomes less and less smooth. And that means our PDE will be dependent on more and more dictionary functions.
+Now, let's think of representing loss function in terms of three losses described above. We would want PDE to intervene when model is overfitting. Generally, model overfits when data is noisy i.e. it contains outliers. Outliers cause a spike in loss value, thus increasing the **mean** (remember, $$L_{model}$$ is MSE) and consequently forcing model to _perfectly_ fit the outlier. However, in the process of fitting every outlier, the function which model learns becomes less and less smooth. And that means underlying PDE will have to be dependent on more and more dictionary functions.
 
-But that can't happen. Why? Because of $$L_1$$ regularization applied on $$\phi$$. (_The Occam's razor finally strikes!!!!!_) Hence, whenever function being learned by the model tends to become _less-smooth(rough, spiky, etc.)_, $$L_{PDE}$$ and $$L_{complexity}$$ should be allowed to dominate the loss function.
+But that can't happen. Why? Because of $$L_1$$ regularization applied on $$\phi$$. (_The Occam's razor finally strikes!!!!!_).
+
+In order to make all of this happen, we must ensure that whenever $$L_{model}$$ is high, $$L_{PDE}$$ and $$L_{complexity}$$  dominate the loss function. $$L_{complexity}$$ will force the underlying PDE to be dependent on fewer dictionary functions and $$L_{PDE}$$ will force the model to learn a smooth function.
 
 Also, when normal data points(i.e. data points which are not outliers) are encountered, $$L_{model}$$ should dominate the loss function.
 
@@ -107,13 +116,13 @@ A simple function satisying above conditions is:
 
 $$L_{net} = G(L_{model}, L_{PDE}, L_{complexity}) = \lambda_{model}L_{model}(1 + \lambda_{PDE}L_{PDE} + \lambda_{complexity}L_{complexity})$$
 
-where, $$\lambda_{model}$$, $$\lambda_{PDE}$$ and $$\lambda_{complexity}$$ are lagrange multipliers.
+where, $$\lambda_{model}$$, $$\lambda_{PDE}$$ and $$\lambda_{complexity}$$ are [Lagrange multipliers](https://www.khanacademy.org/math/multivariable-calculus/applications-of-multivariable-derivatives/lagrange-multipliers-and-constrained-optimization/v/meaning-of-lagrange-multiplier).
 
 ### Results
 
-Results claimed by the authors seems to be decent. Error computation is as follows:
+Results claimed by the authors seem to be decent. Error computation is as follows:
 
-1. Normalise original PDE coefficients($$\phi$$) and predicted PDE coefficients($$\phi^*$$),
+1. [Normalise](http://mathworld.wolfram.com/NormalizedVector.html) original PDE coefficients($$\phi$$) and predicted PDE coefficients($$\phi^*$$),
 2. Compute their dot product,
 3. Subtract it from 1
 4. Take square root of the difference.  
@@ -121,12 +130,14 @@ Results claimed by the authors seems to be decent. Error computation is as follo
 Obviously, because of normalization, dot product will be in between -1 and 1. Hence, in step 3, the difference will never be negative, so loss will always
 be real.
 
-However, the authors haven't reported the MSE loss on learned data. That will be a good thing to try, though.
+However, the authors haven't reported the MSE values on train and test data. That will be a good thing to try.
 
-Refer to paper for exact values.
+Refer to the paper for exact values.
 
 ### My two cents
- This paper proposes a new way of tackling overfitting. It assumes that as more and more noisy data points are encountered by the model, overfitting will decrease the smoothness of function being approximated by it. This assumption does make sense and is true for all practical cases I've seen till now. In that sense, it provides an implicit solution for overfitting. However, there are two clear disadvantages
+ This paper proposes a new way of tackling overfitting. It assumes that as more and more noisy data points are encountered by the model, overfitting will decrease the smoothness of function being approximated by it. This assumption does make sense and is true for all practical cases I've seen till now. In that sense it provides an implicit solution for overfitting, which eliminates the need of _overfitting mitigation methods_ like cross validation, manually checking results on validation data, etc.
+
+ However, there are two clear disadvantages
 * Pre-specifying dictionary functions
 * Assumption that PDE is **linear** combination of dictionary function.
 
@@ -134,6 +145,11 @@ Because of reasons mentioned above, this method is useless for domains where we 
 
 However, this method will be very useful in domains like physics and finance, where we already have a set of potential dictionary functions.
 
+### Up Next
+
+* Simulate their work and extend it for some other PDEs.
+* Report MSE on train and test set.
+* Improve hyperparameter search by using [ASHA](https://arxiv.org/pdf/1810.05934.pdf), [PBT](https://deepmind.com/blog/article/population-based-training-neural-networks) or other techniques.
 ------
 
 #### Have any issues/complaints/suggestions, feel free to mail me at [rishurai24@gmail.com](mailto:rishurai24@gmail.com), or open an issue [here](https://github.com/Prakash2403/blog-src/issues)
