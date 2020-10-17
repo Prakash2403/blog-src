@@ -1,0 +1,25 @@
+---
+label: The genetic shoelaces
+hide_body: false
+fields:
+- type: text
+  name: title
+  label: title
+- type: datetime
+  name: date
+  label: date
+- type: text
+  name: post-style
+  label: post-style
+- type: list
+  name: tags
+  label: tags
+- type: list
+  name: domain
+  label: domain
+- type: text
+  name: markup
+  label: markup
+- type: text
+  name: summary
+  label: summary
